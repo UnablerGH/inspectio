@@ -26,3 +26,5 @@
 
     ```bash
     python app.py
+
+4. External hosting (+5 points)

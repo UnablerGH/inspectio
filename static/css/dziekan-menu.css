@@ -26,5 +26,5 @@
 
 .purple {
     height: 100%;
-    width: 40%;
+    width: calc(40% - 20px);
 }

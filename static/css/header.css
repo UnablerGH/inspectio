@@ -1,0 +1,30 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #fff;
+    border-bottom: 3px solid #ddd;
+}
+
+img {
+    width: 80px;
+}
+
+.account-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.account-bar p {
+    font-size: 28px;
+}
+
+i {
+    font-size: 28px;
+    color: #b21902;
+    cursor: pointer;
+}

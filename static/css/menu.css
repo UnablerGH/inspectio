@@ -17,16 +17,6 @@ body {
     margin: auto;
 }
 
-.header {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 1%;
-    background: #fff;
-    border-bottom: 3px solid #ddd;
-}
-
 .blue { background-color: #007bff; }
 .red { background-color: #dc3545; }
 .green { background-color: #28a745; }

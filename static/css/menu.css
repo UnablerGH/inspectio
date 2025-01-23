@@ -1,0 +1,33 @@
+* {
+    text-decoration: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    height: 100%;
+}
+
+.container {
+    width: 90%;
+    min-height: 700px;
+    height: 100vh;
+    margin: auto;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1%;
+    background: #fff;
+    border-bottom: 3px solid #ddd;
+}
+
+.blue { background-color: #007bff; }
+.red { background-color: #dc3545; }
+.green { background-color: #28a745; }
+.purple { background-color: #6f42c1; }

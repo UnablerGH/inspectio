@@ -16,6 +16,10 @@ def query_db(query, args=(), one=False):
 def dziekan_menu():
     return render_template('dziekan-menu.html')
 
+@app.route('/menu')
+def hospitacje_menu():
+    return render_template('hospitacje-menu.html')
+
 @app.route('/api/users', methods=['GET'])
 def get_users():
     users = query_db('SELECT * FROM users')

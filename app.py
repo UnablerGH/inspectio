@@ -16,6 +16,10 @@ def query_db(query, args=(), one=False):
 def dziekan_menu():
     return render_template('dziekan-menu.html')
 
+@app.route('/edycja-szablonu')
+def edycja_szablonu():
+    return render_template('edycja-szablonu.html')
+
 @app.route('/menu')
 def hospitacje_menu():
     return render_template('hospitacje-menu.html')

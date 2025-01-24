@@ -1,4 +1,6 @@
 .header {
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -23,7 +25,7 @@ img {
     font-size: 28px;
 }
 
-i {
+.header i {
     font-size: 28px;
     color: #b21902;
     cursor: pointer;

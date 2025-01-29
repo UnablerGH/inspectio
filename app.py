@@ -24,6 +24,14 @@ def edycja_szablonu():
 def hospitacje_menu():
     return render_template('hospitacje-menu.html')
 
+@app.route('/dotyczace-mnie')
+def hospitacje_dotyczace_mnie():
+    return render_template('hospitacje-dotyczace-mnie.html')
+
+@app.route('/zatwierdzenie-hospitacji/<int:id>')
+def zatwierdzenie_hospitacji(id):
+    return render_template('zatwierdzenie-hospitacji.html', id=id)
+
 @app.route('/api/users', methods=['GET'])
 def get_users():
     users = query_db('SELECT * FROM users')

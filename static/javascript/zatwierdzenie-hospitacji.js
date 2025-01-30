@@ -1,88 +1,106 @@
-var protocol = [
-  {
-    "name": "Informacje wstępne",
-    "desc": "",
-    "info": [
-      {
-        "question": "Prowadzący zajęcia jednostka organizacyjna:",
-        "answer": "Jan Kowalski"
-      },
-      {
-        "question": "Kod przedmiotu:",
-        "answer": "W041ST-S10018L"
-      },
-      {
-        "question": "Sposób realizacji (tradycyjny, zdalny):",
-        "answer": "tradycyjny"
+async function fetchHospitacjaDetails(id) {
+  try {
+      const response = await fetch(`/api/hospitacja/${id}`);
+      if (!response.ok) {
+          throw new Error('Błąd pobierania danych');
       }
-    ]
-  },
-  {
-    "name": "Ocena formalna zajęć",
-    "desc": "",
-    "info": [
-      {
-        "question": "Czy zajęcia zaczęły się punktualnie (tak, nie, ile spóźnienia):",
-        "answer": "5 minut spóźnienia"
-      },
-      {
-        "question": "Czy sprawdzono obecność studentów. Jeżeli tak podać liczbę obecnych:",
-        "answer": "tak, 14 obecnych"
-      },
-      {
-        "question": "Czy sala i jej wyposażenie są przystosowane do formy prowadzonych zajęć. Jeżeli nie to z jakich powodów:",
-        "answer": "tak"
-      }
-    ]
-  },
-  {
-    "name": "Ocena merytoryczna i metodyczna przeprowadzonych zajęć",
-    "desc": "5,5 - wzorowa, 5 - bardzo dobra, 4 - dobra, 3 - dostateczna, 2 - negatywna, 0 - nie dotyczy",
-    "info": [
-      {
-        "question": "Fajność",
-        "answer": "5,5"
-      }
-    ]
+      const data = await response.json();
+      renderHospitacjaDetails(data);
+      renderProtocol(data);
+      setupButton(id, data.status);  // Przekazanie statusu do setupButton
+  } catch (error) {
+      console.error('Błąd:', error);
   }
-];
-
-function renderProtocol() {
-    const container = document.querySelector('.protocol')
-
-    const ol = document.createElement('ol');
-
-    protocol.forEach((section) => {
-        const sectionItem = document.createElement('li');
-        
-        const sectionHeader = document.createElement('strong');
-        sectionHeader.innerText = section.name;
-        const sectionDesc = section.desc ? document.createElement('span') : null;
-        if (sectionDesc) {
-            sectionDesc.innerText = section.desc;
-        }
-        
-        sectionItem.appendChild(sectionHeader);
-        sectionItem.appendChild(document.createElement('br')); // Add a line break after the section name
-        
-        if (sectionDesc) {
-            sectionItem.appendChild(sectionDesc);
-            sectionItem.appendChild(document.createElement('br')); // Add a line break after the description
-        }
-
-        const innerOl = document.createElement('ol');
-        section.info.forEach((item) => {
-            const li = document.createElement('li');
-            li.innerHTML = `${item.question} <br/> <span class="response">${item.answer}</span>`;
-            innerOl.appendChild(li);
-        });
-
-        sectionItem.appendChild(innerOl);
-        ol.appendChild(sectionItem);
-    });
-
-    container.appendChild(ol);
 }
 
+function renderHospitacjaDetails(hospitacja) {
+  const leftDiv = document.querySelector('.left');
+  const rightDiv = document.querySelector('.right');
 
-renderProtocol();
+  // Tworzymy jedno p dla danych w lewej sekcji
+  leftDiv.innerHTML = `
+      <p>${hospitacja.przedmiot_nazwa} <br/>
+      ${hospitacja.przedmiot_kod} <br/>
+      Zespół hospitujący: ${hospitacja.zespol_hospitujacy.join(', ')}</p>
+  `;
+
+  // Tworzymy jedno p dla danych w prawej sekcji
+  rightDiv.innerHTML = `
+      <p>${hospitacja.termin} <br/>
+      ${hospitacja.miejsce}</p>
+      <button>${hospitacja.status === 'completed' ? 'Zatwierdzono' : 'Zatwierdź'}</button>
+  `;
+}
+
+async function setupButton(id, status) {
+  const button = document.querySelector('.right button');
+  
+  if (status === 'completed') {
+      button.classList.add('accepted');
+      button.disabled = true; 
+  } else {
+      button.classList.remove('accepted');
+      button.disabled = false;
+
+      // Dodanie event listener do przycisku
+      button.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`/api/hospitacja/${id}/zaakceptuj`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                button.classList.add('accepted');
+                button.disabled = true;
+                button.textContent = 'Zatwierdzono';  // Zmieniamy tekst na "Zatwierdzono"
+            } else {
+                throw new Error('Nie udało się zaakceptować hospitacji');
+            }
+        } catch (error) {
+            console.error('Błąd przy akceptacji hospitacji:', error);
+        }
+      });
+  }
+}
+
+function renderProtocol(hospitacja) {
+  const container = document.querySelector('.protocol');
+
+  const protocol = JSON.parse(hospitacja.protokol);
+
+  const ol = document.createElement('ol');
+
+  protocol.forEach((section) => {
+      const sectionItem = document.createElement('li');
+      
+      const sectionHeader = document.createElement('strong');
+      sectionHeader.innerText = section.nazwa;
+      const sectionopis = section.opis ? document.createElement('span') : null;
+      if (sectionopis) {
+          sectionopis.innerText = section.opis;
+      }
+      
+      sectionItem.appendChild(sectionHeader);
+      sectionItem.appendChild(document.createElement('br'));
+      
+      if (sectionopis) {
+          sectionItem.appendChild(sectionopis);
+          sectionItem.appendChild(document.createElement('br'));
+      }
+
+      const innerOl = document.createElement('ol');
+      section.info.forEach((item) => {
+          const li = document.createElement('li');
+          li.innerHTML = `${item.pytanie} <br/> <span class="response">${item.odpowiedz}</span>`;
+          innerOl.appendChild(li);
+      });
+
+      sectionItem.appendChild(innerOl);
+      ol.appendChild(sectionItem);
+  });
+
+  container.appendChild(ol);
+}
+
+const hospitacjaId = document.querySelector('.info').getAttribute('data-hospitacja-id');
+fetchHospitacjaDetails(hospitacjaId);

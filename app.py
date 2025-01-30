@@ -39,6 +39,9 @@ def hospitacje_menu():
 def hospitacje_dotyczace_mnie():
     return render_template('hospitacje-dotyczace-mnie.html')
 
+@app.route('/zlecone-mi')
+def hospitacje_zlecone_mi():
+    return render_template('zlecone-hospitacje.html')
 
 @app.route('/zatwierdzenie-hospitacji/<int:id>')
 def zatwierdzenie_hospitacji(id):

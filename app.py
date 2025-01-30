@@ -51,9 +51,7 @@ def hospitacje_zlecone_mi():
 
 @app.route('/zatwierdzenie-hospitacji/<int:id>')
 def zatwierdzenie_hospitacji(id):
-    hospitacja = query_db("SELECT * FROM hospitacje WHERE id_hospitacji = ?", (id,), one=True)
-    protokol = query_db("SELECT zawartosc_protokolu FROM hospitacje WHERE id_hospitacji = ?", (id,), one=True)
-    return render_template('zatwierdzenie-hospitacji.html', hospitacja=hospitacja, protokol=protokol)
+    return render_template('zatwierdzenie-hospitacji.html', id=id)
 
 
 # Operacje

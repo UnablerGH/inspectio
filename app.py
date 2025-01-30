@@ -7,7 +7,10 @@ def query_db(query, args=(), one=False):
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute(query, args)
+    try:
+        cur.execute(query, args)
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
     rv = cur.fetchall()
     conn.close()
     return (rv[0] if rv else None) if one else rv

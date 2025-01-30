@@ -71,8 +71,10 @@ CREATE TABLE IF NOT EXISTS hospitacje (
     termin DATE,
     hospitowany_id INTEGER,
     przedmiot_id INTEGER,
-    zawartosc_protokolu TEXT,
     harmonogram_id INTEGER,
+    zawartosc_protokolu TEXT,
+    data_sporzadzenia DATE,
+    data_zatwierdzenia DATE,
     FOREIGN KEY(hospitowany_id) REFERENCES pracownicy(id_pracownika),
     FOREIGN KEY(przedmiot_id) REFERENCES przedmioty(id_przedmiotu),
     FOREIGN KEY(harmonogram_id) REFERENCES harmonogramy(id_harmonogramu)
@@ -175,39 +177,92 @@ przedmioty_pracownikow = [
 cursor.executemany("INSERT INTO przedmioty_pracownikow (id_pracownika, id_przedmiotu) VALUES (?, ?)", przedmioty_pracownikow)
 
 # Hospitacje
-hospitacje = [
-    (30, 'Sala 107b, bud. D-2', '2025-04-15', 1, 1, '', 1),
-    (25, 'Sala 204, bud. B-3', '2025-05-03', 1, 5, '', 2),
-    (20, 'Sala 303, bud. E-1', '2025-12-10', 2, 2, '', 1),
-    (35, 'Sala 101, bud. C-1', '2025-12-18', 2, 7, '', 3),
-    (28, 'Sala 110, bud. F-4', '2025-02-15', 3, 3, '', 2),
-    (22, 'Sala 305, bud. B-2', '2025-06-03', 4, 4, '', 1),
-    (24, 'Sala 212, bud. D-3', '2025-06-12', 4, 6, '', 3),
-    (32, 'Sala 402, bud. A-1', '2025-04-28', 5, 11, '', 2),
-    (21, 'Sala 308, bud. E-5', '2025-05-20', 6, 9, '', 3),
-    (26, 'Sala 404, bud. C-3', '2025-01-20', 7, 8, '', 1),
-    (30, 'Sala 101, bud. A-4', '2025-06-15', 8, 13, '', 2),
-    (28, 'Sala 207, bud. B-4', '2025-12-05', 9, 10, '', 1),
-    (25, 'Sala 202, bud. D-1', '2025-11-18', 10, 12, '', 3),
-    (22, 'Sala 106, bud. F-5', '2025-05-05', 11, 14, '', 2),
-    (20, 'Sala 308, bud. C-2', '2025-04-22', 12, 15, '', 1),
-    (30, 'Sala 310, bud. A-3', '2025-06-17', 13, 17, '', 3),
-    (35, 'Sala 107b, bud. E-4', '2025-02-25', 14, 16, '', 2),
-    (25, 'Sala 205, bud. B-1', '2025-04-10', 15, 20, '', 1)
-]
-cursor.executemany("INSERT INTO hospitacje (liczba_osob_zapisanych, miejsce, termin, hospitowany_id, przedmiot_id, zawartosc_protokolu, harmonogram_id) VALUES (?, ?, ?, ?, ?, ?, ?)", hospitacje)
+protokol = """ [
+  {
+    "nazwa": "Informacje wstępne",
+    "opis": "",
+    "info": [
+      {
+        "pytanie": "Prowadzący zajęcia jednostka organizacyjna:",
+        "odpowiedz": "Jan Kowalski"
+      },
+      {
+        "pytanie": "Kod przedmiotu:",
+        "odpowiedz": "W041ST-S10018L"
+      },
+      {
+        "pytanie": "Sposób realizacji (tradycyjny, zdalny):",
+        "odpowiedz": "tradycyjny"
+      }
+    ]
+  },
+  {
+    "nazwa": "Ocena formalna zajęć",
+    "opis": "",
+    "info": [
+      {
+        "pytanie": "Czy zajęcia zaczęły się punktualnie (tak, nie, ile spóźnienia):",
+        "odpowiedz": "5 minut spóźnienia"
+      },
+      {
+        "pytanie": "Czy sprawdzono obecność studentów. Jeżeli tak podać liczbę obecnych:",
+        "odpowiedz": "tak, 14 obecnych"
+      },
+      {
+        "pytanie": "Czy sala i jej wyposażenie są przystosowane do formy prowadzonych zajęć. Jeżeli nie to z jakich powodów:",
+        "odpowiedz": "tak"
+      }
+    ]
+  },
+  {
+    "nazwa": "Ocena merytoryczna i metodyczna przeprowadzonych zajęć",
+    "opis": "5,5 - wzorowa, 5 - bardzo dobra, 4 - dobra, 3 - dostateczna, 2 - negatywna, 0 - nie dotyczy",
+    "info": [
+      {
+        "pytanie": "Fajność",
+        "odpowiedz": "5,5"
+      }
+    ]
+  }
+]"""
 
-# Zespoły hospitujące
+hospitacje = [
+    (30, 'Sala 107b, bud. D-2', '2025-04-15', 1, 1, 1, protokol, '2025-04-29', '2025-05-03'),
+    (25, 'Sala 204, bud. B-3', '2025-05-03', 1, 5, 1, protokol, '2025-05-17', None),
+    (20, 'Sala 303, bud. E-1', '2025-12-10', 1, 2, 2, protokol, None, None),
+    (35, 'Sala 101, bud. C-1', '2025-12-18', 2, 7, 3, protokol, '2026-01-01', '2026-01-15'),
+    (28, 'Sala 110, bud. F-4', '2025-02-15', 3, 3, 2, protokol, '2025-03-01', '2025-03-15'),
+    (22, 'Sala 305, bud. B-2', '2025-06-03', 4, 4, 1, protokol, '2025-06-17', '2025-07-01'),
+    (24, 'Sala 212, bud. D-3', '2025-06-12', 4, 6, 3, protokol, '2025-06-26', '2025-07-10'),
+    (32, 'Sala 402, bud. A-1', '2025-04-28', 5, 11, 2, protokol, '2025-05-12', '2025-05-26'),
+    (21, 'Sala 308, bud. E-5', '2025-05-20', 6, 9, 3, protokol, '2025-06-03', '2025-06-17'),
+    (26, 'Sala 404, bud. C-3', '2025-01-20', 7, 8, 1, protokol, '2025-02-03', '2025-02-17'),
+    (30, 'Sala 101, bud. A-4', '2025-06-15', 8, 13, 2, protokol, '2025-06-29', '2025-07-13'),
+    (28, 'Sala 207, bud. B-4', '2025-12-05', 9, 10, 1, protokol, '2025-12-19', '2026-01-02'),
+    (25, 'Sala 202, bud. D-1', '2025-11-18', 10, 12, 3, protokol, '2025-12-02', '2025-12-16'),
+    (22, 'Sala 106, bud. F-5', '2025-05-05', 11, 14, 2, protokol, '2025-05-19', '2025-06-02'),
+    (20, 'Sala 308, bud. C-2', '2025-04-22', 12, 15, 1, protokol, '2025-05-06', '2025-05-20'),
+    (30, 'Sala 310, bud. A-3', '2025-06-17', 13, 17, 3, protokol, '2025-07-01', '2025-07-15'),
+    (35, 'Sala 107b, bud. E-4', '2025-02-25', 14, 16, 2, protokol, '2025-03-11', '2025-03-25'),
+    (25, 'Sala 205, bud. B-1', '2025-04-10', 15, 20, 1, protokol, '2025-04-24', '2025-05-08')
+]
+
+cursor.executemany('''
+    INSERT INTO hospitacje (
+        liczba_osob_zapisanych, miejsce, termin, hospitowany_id, przedmiot_id, 
+        harmonogram_id, zawartosc_protokolu, data_sporzadzenia, data_zatwierdzenia
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+''', hospitacje)
+
+
 zespoly_hospitujace = [
     (1, 1), (1, 2), (2, 1), (2, 3), (3, 4), (3, 1), (4, 2), (4, 3), (5, 4), (5, 1),
     (6, 2), (6, 4), (7, 5), (7, 6), (8, 1), (8, 3), (9, 4), (9, 5), (10, 6)
 ]
 cursor.executemany("INSERT INTO zespoly_hospitujace (id_hospitacji, id_hospitujacego) VALUES (?, ?)", zespoly_hospitujace)
 
-# Zatwierdzenie zmian
 conn.commit()
 
-# Zamknięcie połączenia
 conn.close()
 
 print("Baza danych została stworzona i dane zostały dodane.")

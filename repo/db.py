@@ -15,7 +15,7 @@ def query_db(query, args=(), one=False):
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
-        rv = None
+        rv = Nonea
     finally:
         conn.close()
     return (rv[0] if rv else None) if one else rv

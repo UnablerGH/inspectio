@@ -17,7 +17,6 @@ def test_get_db_connection(mock_db_connection):
 
 def test_query_db(mock_db_connection):
     mock_cursor = mock_db_connection.cursor.return_value
-    # Mocking the result returned by fetchall to be a list of dictionaries
     mock_cursor.fetchall.return_value = [{'id_hospitacji': 1, 'termin': '2025-04-15', 'data_zatwierdzenia': None, 'nazwa': 'Techniki efektywnego programowania'}]
 
     result = query_db('SELECT * FROM hospitacje', one=True)

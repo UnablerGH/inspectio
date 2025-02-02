@@ -7,12 +7,15 @@ def get_szablon():
 
 def save_szablon(data):
     try:
-        if not isinstance(data, dict):
+        if not isinstance(data, list):
             raise ValueError("Dane muszą być w formacie JSON")
-
+        
         with open('szablon.json', 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
 
-        return {"message": "Szablon został zapisany pomyślnie"}
+        return {"message": "Szablon został zapisany pomyślnie"}, 201
+
+    except ValueError as e:
+        return {"error": str(e)}, 400
     except Exception as e:
-        return {"error": f"Coś poszło nie tak: {str(e)}"}
+        return {"error": f"Coś poszło nie tak: {str(e)}"}, 500

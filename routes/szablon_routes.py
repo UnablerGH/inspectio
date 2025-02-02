@@ -9,4 +9,5 @@ def get_szablon_endpoint():
 
 @szablon_bp.route('/api/szablon', methods=['POST'])
 def post_szablon_endpoint():
-    return save_szablon(request)
+    message, status_code = save_szablon(request.get_json())
+    return jsonify(message), status_code

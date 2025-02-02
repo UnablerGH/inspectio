@@ -47,14 +47,18 @@ def get_hospitacja_details(id_hospitacji):
         'termin': hospitacja['termin'],
         'miejsce': hospitacja['miejsce'],
         'protokol': hospitacja['protokol'],
-        'zespol_hospitujacy': hospitacja['zespol_hospitujacy'].split(',') if hospitacja['zespol_hospitujacy'] else [],
+        'zespol_hospitujacy': hospitacja['zespol_hospitujacy'].split(', ') if hospitacja['zespol_hospitujacy'] else [],
         'status': 'completed' if hospitacja['data_zatwierdzenia'] else 'pending'
     }
 
 def zaakceptuj_hospitacje(id_hospitacji):
-    query_db('''
+    row_count = query_db('''
         UPDATE hospitacje
         SET data_zatwierdzenia = CURRENT_TIMESTAMP
         WHERE id_hospitacji = ?
     ''', (id_hospitacji,))
+    
+    if row_count == 0:
+        return {'message': 'Hospitacja nie istnieje lub już zatwierdzona'}
+    
     return {'message': 'Hospitacja została zaakceptowana'}

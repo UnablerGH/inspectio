@@ -18,9 +18,7 @@ import json
 
 @when('wysyłam żądanie POST do "{endpoint}" z danymi:')
 def step_impl(context, endpoint):
-    # Parsujemy payload, by upewnić się, że jest poprawnym JSON-em
     payload = json.loads(context.text.strip())
-    # Wysyłamy payload jako json.dumps(payload)
     context.response = context.client.post(
         endpoint,
         data=json.dumps(payload),

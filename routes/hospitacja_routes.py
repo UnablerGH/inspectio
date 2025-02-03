@@ -30,11 +30,13 @@ def get_zlecone_hospitacje_endpoint(id_pracownika):
 @hospitacja_bp.route('/api/hospitacja/<int:id_hospitacji>/zapisz', methods=['POST'])
 def zapisz_hospitacje_protocol_endpoint(id_hospitacji):
     data = request.get_json()
+    print("Otrzymane dane:", data)  # Debugowanie
     new_protocol = data.get('protocol')
     if new_protocol is None:
         return jsonify({"error": "Brak protokołu w żądaniu"}), 400
     result = update_hospitacja_protocol(id_hospitacji, new_protocol)
     return jsonify(result), 200
+
 
 @hospitacja_bp.route('/api/szablon', methods=['GET'])
 def get_szablon_endpoint():

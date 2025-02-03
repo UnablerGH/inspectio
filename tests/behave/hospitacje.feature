@@ -17,3 +17,22 @@ Feature: Endpoints hospitacji
     When wysyłam żądanie POST do "/api/hospitacja/1/zaakceptuj"
     Then otrzymuję status 200
     And odpowiedź zawiera "message"
+
+Scenario: Zapis protokołu hospitacji
+  Given aplikacja jest uruchomiona
+  When wysyłam żądanie POST do "/api/hospitacja/1/zapisz" z danymi:
+    """
+    {
+      "protocol": [
+        {
+          "nazwa": "Sekcja testowa",
+          "opis": "",
+          "info": [
+            {"pytanie": "Test pytanie", "odpowiedz": "Odpowiedź"}
+          ]
+        }
+      ]
+    }
+    """
+  Then otrzymuję status 200
+  And odpowiedź zawiera "Protokół został zapisany"

@@ -14,12 +14,16 @@ def step_impl(context, endpoint):
 def step_impl(context, endpoint):
     context.response = context.client.post(endpoint)
 
+import json
+
 @when('wysyłam żądanie POST do "{endpoint}" z danymi:')
 def step_impl(context, endpoint):
-    payload = context.text.strip()
+    # Parsujemy payload, by upewnić się, że jest poprawnym JSON-em
+    payload = json.loads(context.text.strip())
+    # Wysyłamy payload jako json.dumps(payload)
     context.response = context.client.post(
         endpoint,
-        data=payload,
+        data=json.dumps(payload),
         content_type='application/json'
     )
 

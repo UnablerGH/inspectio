@@ -1,3 +1,4 @@
+import json
 from repo.db import query_db
 
 def get_hospitacje_pracownika(id_pracownika):
@@ -62,3 +63,42 @@ def zaakceptuj_hospitacje(id_hospitacji):
         return {'message': 'Hospitacja nie istnieje lub już zatwierdzona'}
     
     return {'message': 'Hospitacja została zaakceptowana'}
+
+def get_zlecone_hospitacje(id_pracownika):
+    hospitacje = query_db('''
+        SELECT h.id_hospitacji,
+               h.miejsce,
+               h.termin,
+               h.hospitowany_id,
+               p.imie || ' ' || p.nazwisko AS hospitowany,
+               h.przedmiot_id,
+               pr.nazwa AS nazwa,
+               h.harmonogram_id,
+               h.data_zatwierdzenia
+        FROM zespoly_hospitujace zh
+        JOIN hospitacje h ON zh.id_hospitacji = h.id_hospitacji
+        JOIN pracownicy p ON h.hospitowany_id = p.id_pracownika
+        JOIN przedmioty pr ON h.przedmiot_id = pr.id_przedmiotu
+        WHERE zh.id_hospitujacego = ?;
+    ''', (id_pracownika,))
+    
+    print("Zlecone hospitacje dla pracownika", id_pracownika, ":", hospitacje) 
+    
+    return [
+        {
+            'id': h['id_hospitacji'],
+            'termin': h['termin'],
+            'status': 'completed' if h['data_zatwierdzenia'] else 'pending',
+            'nazwa': h['nazwa']
+        } for h in hospitacje
+    ]
+
+def update_hospitacja_protocol(id_hospitacji, new_protocol):
+    if isinstance(new_protocol, (dict, list)):
+        new_protocol = json.dumps(new_protocol, ensure_ascii=False, indent=4)
+
+    query_db(
+        'UPDATE hospitacje SET zawartosc_protokolu = ? WHERE id_hospitacji = ?',
+        (new_protocol, id_hospitacji)
+    )
+    return {"message": "Protokół został zapisany"}

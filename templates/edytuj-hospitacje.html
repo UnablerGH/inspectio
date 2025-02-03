@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Edycja hospitacji</title>
+    <link rel="stylesheet" href="/static/css/edytuj-hospitacje.css">
+</head>
+<body>
+    <h1>Edycja hospitacji</h1>
+    <!-- Kontener ze szczegółami hospitacji -->
+    <div id="hospitacja-details">
+        <p>ID: <span id="hospitacja-id"></span></p>
+        <p>Termin: <span id="hospitacja-termin"></span></p>
+        <!-- Możesz dodać inne dane -->
+    </div>
+
+    <!-- Edytor protokołu -->
+    <textarea id="protocol-editor" cols="80" rows="20"></textarea>
+    
+    <!-- Przycisk do akcji -->
+    <div id="buttons">
+        <button id="btn-zapisz">Zapisz</button>
+        <button id="btn-zatwierdz">Zatwierdź</button>
+        <button id="btn-anuluj">Anuluj</button>
+    </div>
+
+    <script src="/static/javascript/edytuj-hospitacje.js"></script>
+</body>
+</html>

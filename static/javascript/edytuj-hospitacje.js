@@ -77,6 +77,54 @@ async function acceptHospitation(id) {
     }
 }
 
+function saveProtocolTemplate(id, form) {
+    const protocol = [];
+    const sectionDivs = form.querySelectorAll('.protocol-section');
+    sectionDivs.forEach((sectionDiv) => {
+        const section = {};
+        section.nazwa = sectionDiv.querySelector('h3').textContent;
+        // Jeśli istnieje opis, go pobieramy
+        const descElem = sectionDiv.querySelector('p');
+        section.opis = descElem ? descElem.textContent : "";
+        section.info = [];
+        const fieldDivs = sectionDiv.querySelectorAll('.protocol-field');
+        fieldDivs.forEach((fieldDiv) => {
+            const label = fieldDiv.querySelector('label').textContent;
+            const input = fieldDiv.querySelector('input');
+            section.info.push({
+                pytanie: label,
+                odpowiedz: input.value
+            });
+        });
+        protocol.push(section);
+    });
+
+    fetch(`/api/hospitacja/${id}/zapisz`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ protocol: protocol })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Błąd zapisu protokołu');
+        }
+        return response.json();
+    })
+    .then(result => {
+        alert(result.message);
+        // Po udanym zapisie odśwież dane:
+        // opcja 1: przeładuj stronę
+        // location.reload();
+        // opcja 2: wywołaj funkcję pobierającą dane dla tej hospitacji
+        fetchHospitationDetails(id);
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Wystąpił błąd podczas zapisywania protokołu');
+    });
+}
+
+
 // Funkcja anulująca edycję – tutaj odświeżamy dane z serwera
 function cancelEditing(id) {
     fetchHospitationDetails(id);

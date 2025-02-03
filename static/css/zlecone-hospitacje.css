@@ -104,6 +104,18 @@
     flex-direction: column;
 }
 
+.edit-container {
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.edit-container.expanded {
+    max-height: 1000px; /* wartość wystarczająco duża, aby pomieścić zawartość */
+    opacity: 1;
+}
+
+
 /* Nagłówek hospitacji – zgodnie z dotychczasową stylistyką */
 .hospitation-header {
     width: 100%;

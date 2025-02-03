@@ -7,7 +7,7 @@ def get_szablon():
 
 def save_szablon(data):
     try:
-        if not isinstance(data, list):
+        if not isinstance(data, list): 
             raise ValueError("Dane muszą być w formacie JSON")
         
         with open('szablon.json', 'w', encoding='utf-8') as file:

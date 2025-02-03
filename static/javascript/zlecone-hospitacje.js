@@ -31,6 +31,9 @@ function displayAssignedHospitations(hospitationData) {
         // Główny kontener dla jednej hospitacji
         const hospitationDiv = document.createElement('div');
         hospitationDiv.classList.add('hospitation-item');
+        hospitationDiv.setAttribute('data-id', hospitation.id);
+        console.log("Hospitation id:", hospitation.id);
+        console.log("Hospitation status:", hospitation.status);
 
         // Nagłówek z podstawowymi informacjami
         const header = document.createElement('div');
@@ -44,26 +47,23 @@ function displayAssignedHospitations(hospitationData) {
         date.classList.add('date');
         date.textContent = hospitation.termin;
 
+        // Ikona statusu – zawsze ustawiamy pustą ikonę (pending)
         const statusIcon = document.createElement('i');
-        if (hospitation.status === 'completed') {
-            statusIcon.classList.add('fa-solid', 'fa-square-check');
-        } else {
-            statusIcon.classList.add('fa-regular', 'fa-square');
-        }
+        statusIcon.classList.add('status-icon', 'fa-regular', 'fa-square');
 
         // Przycisk umożliwiający rozwinięcie i edycję hospitacji
         const editButton = document.createElement('button');
         editButton.textContent = 'Edytuj';
         editButton.addEventListener('click', () => editHospitation(hospitation.id, hospitationDiv));
 
-        // Dodajemy elementy do nagłówka
+        // Dodajemy elementy do nagłówka (kolejność: tytuł, data, status, edytuj)
         header.appendChild(title);
         header.appendChild(date);
         header.appendChild(statusIcon);
         header.appendChild(editButton);
         hospitationDiv.appendChild(header);
 
-        // Kontener dla formularza edycji – ukryty domyślnie (bezpośrednio sterowany przez klasę CSS)
+        // Kontener dla formularza edycji – sterowany przez klasę CSS (efekt rozwijania)
         const editContainer = document.createElement('div');
         editContainer.classList.add('edit-container'); // CSS zadba o efekt rozwijania
         hospitationDiv.appendChild(editContainer);
@@ -72,10 +72,24 @@ function displayAssignedHospitations(hospitationData) {
     });
 }
 
-// Funkcja inicjująca edycję hospitacji – zamiast ładować istniejący protokół, pobieramy pusty szablon
+
 function editHospitation(id, hospitationDiv) {
+    const editContainer = hospitationDiv.querySelector('.edit-container');
+    // Jeśli formularz już został załadowany (nie jest pusty), po prostu przełączamy widoczność:
+    if (editContainer.innerHTML.trim() !== "") {
+        if (editContainer.classList.contains('expanded')) {
+            // Jeśli jest rozwinięty, zwijamy (usuwamy klasę "expanded")
+            editContainer.classList.remove('expanded');
+        } else {
+            // Jeśli jest zwinięty, rozwijamy (dodajemy klasę "expanded")
+            editContainer.classList.add('expanded');
+        }
+        return;
+    }
+    // Jeśli formularz nie został jeszcze załadowany, ładujemy szablon i rozwijamy formularz.
     showEditFormUsingTemplate(id, hospitationDiv);
 }
+
 
 // Funkcja pobierająca pusty szablon i generująca formularz edycji
 async function showEditFormUsingTemplate(id, hospitationDiv) {
@@ -150,17 +164,21 @@ async function showEditFormUsingTemplate(id, hospitationDiv) {
         });
 
         // Przycisk anulowania edycji – zwija formularz
-        const btnCancel = document.createElement('button');
-        btnCancel.textContent = 'Anuluj';
-        btnCancel.type = 'button';
-        btnCancel.addEventListener('click', () => {
-            // Usuwamy klasę expanded, aby formularz zwijał się
-            editContainer.classList.remove('expanded');
+        // Przycisk wyczyść – czyści wszystkie pola formularza
+        const btnClear = document.createElement('button');
+        btnClear.textContent = 'Wyczyść';
+        btnClear.type = 'button';
+        btnClear.addEventListener('click', () => {
+            // Znajdujemy wszystkie pola tekstowe w formularzu i ustawiamy ich wartość na pusty ciąg
+            const inputs = form.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.value = "";
+            });
         });
-
+        
         editContainer.appendChild(btnSave);
         editContainer.appendChild(btnApprove);
-        editContainer.appendChild(btnCancel);
+        editContainer.appendChild(btnClear);
 
         // Dodajemy klasę expanded, która wywoła efekt rozwijania
         editContainer.classList.add('expanded');
@@ -208,7 +226,7 @@ function saveProtocolTemplate(id, form) {
     })
     .then(result => {
         alert(result.message);
-        // Opcjonalnie: można odświeżyć interfejs lub usunąć klasę expanded
+        // Po udanym zapisie zwijamy formularz
         const editContainer = form.parentElement;
         editContainer.classList.remove('expanded');
     })
@@ -229,10 +247,23 @@ async function approveHospitation(id) {
         }
         const result = await response.json();
         alert(result.message);
-        // Opcjonalnie: można zaktualizować interfejs, np. usunąć formularz edycji
-    } catch (error) {
+        // Aktualizujemy ikonę statusu po zatwierdzeniu
+        updateStatusIcon(id);
+    } catch (error) {a
         console.error(error);
-        alert('Wystąpił błąd podczas zatwierdzania hospitacji');
+        alert('Wystąpił błąd podczas zatwierdznia hospitacji');
+    }
+}
+
+// Funkcja aktualizująca ikonę statusu dla danej hospitacji
+function updateStatusIcon(id) {
+    const hospitationDiv = document.querySelector(`.hospitation-item[data-id="${id}"]`);
+    if (hospitationDiv) {
+        const statusIcon = hospitationDiv.querySelector('.status-icon');
+        if (statusIcon) {
+            statusIcon.classList.remove('fa-regular', 'fa-square');
+            statusIcon.classList.add('fa-solid', 'fa-square-check');
+        }
     }
 }
 
